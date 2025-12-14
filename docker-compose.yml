@@ -1,0 +1,24 @@
+version: '3'
+services:
+  ntopng:
+    image: vimagick/ntopng
+    command: --community -d /var/lib/ntopng -i eth0 -r 127.0.0.1:6379@0 -w 0.0.0.0:3000
+    volumes:
+      - ./data/ntopng:/var/lib/ntopng
+    ports:
+      - "3000:3000"
+    network_mode: host
+    depends_on:
+      - redis
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+
+  redis:
+    image: redis:alpine
+    command: --save 900 1
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data
+    restart: unless-stopped
